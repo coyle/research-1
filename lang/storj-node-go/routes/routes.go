@@ -1,35 +1,31 @@
 package routes
 
 import (
-	"github.com/Storj/research/lang/storj-node-go/db"
-	"github.com/boltdb/bolt"
+	"encoding/json"
+
+	"github.com/coyle/research-1/lang/storj-node-go/storage/boltdb"
+
 	"github.com/kataras/iris"
-	"log"
-	"time"
+	uuid "github.com/satori/go.uuid"
 )
 
-func StartDB() {
-	db, err := bolt.Open("my.db", 0600, &bolt.Options{Timeout: 1 * time.Second})
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer db.Close()
-
-	err = db.Update(func(tx *bolt.Tx) error {
-		b, err := tx.CreateBucket([]byte("users"))
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-
-	// db = users.DB{
-	// 	Bucket: b,
-	// }
+// Users contains the items needed to process requests to the user namespace
+type Users struct {
+	DB boltdb.Client
 }
 
-func SetRoutes(app *iris.Application) {
-	app.Post("/users", db.CreateUser)
-	// app.Get("/users", db.ListUsers)
-	// app.Delete("/users/:id", db.DeleteUser)
+// CreateUser instantiates a new user
+func (u *Users) CreateUser(ctx iris.Context) {
+	user := &boltdb.User{}
+
+	if err := ctx.ReadJSON(user); err != nil {
+		// TODO: Handle error
+	}
+
+	userBytes, err := json.Marshal(user)
+	if err != nil {
+		// TODO: Handle error
+	}
+
+	u.DB.CreateUser(uuid.NewV4().Bytes(), userBytes)
 }

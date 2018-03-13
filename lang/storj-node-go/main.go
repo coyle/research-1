@@ -1,14 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"github.com/Storj/research/lang/storj-node-go/db"
-	"github.com/Storj/research/lang/storj-node-go/routes"
-	"github.com/boltdb/bolt"
+	"github.com/coyle/research-1/lang/storj-node-go/routes"
+	"github.com/coyle/research-1/lang/storj-node-go/storage/boltdb"
+
 	"github.com/kataras/iris"
-	"github.com/satori/go.uuid"
-	"log"
-	"time"
 )
 
 // type Contact struct {
@@ -16,9 +12,18 @@ import (
 // }
 
 func main() {
+
+	bdb, err := boltdb.NewBoltDB()
+	if err != nil {
+
+	}
+
+	defer bdb.Close()
+
+	users := routes.Users{DB: bdb}
 	app := iris.Default()
 
-	SetRoutes(app)
+	SetRoutes(app, users)
 
 	// app.Get("/", func(ctx iris.Context) {
 	// 	user := make(map[string]string)
@@ -57,4 +62,11 @@ func main() {
 	// })
 
 	app.Run(iris.Addr(":8080"))
+}
+
+// SetRoutes defines all restful routes on the service
+func SetRoutes(app *iris.Application, users routes.Users) {
+	app.Post("/users", users.CreateUser)
+	// app.Get("/users", db.ListUsers)
+	// app.Delete("/users/:id", db.DeleteUser)
 }
