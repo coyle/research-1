@@ -10,11 +10,12 @@ var defaltTimeout = 1 * time.Second
 
 // Client is the implemented storage interface for the Bolt database
 type Client struct {
+	DB          *bolt.DB
 	UsersBucket *bolt.Bucket
 }
 
-// NewBoltDB instantiates an instance of a new Bolt DB client
-func NewBoltDB() (*Client, error) {
+// New instantiates an instance of a new Bolt DB client
+func New() (*Client, error) {
 	db, err := bolt.Open("my.db", 0600, &bolt.Options{Timeout: defaltTimeout})
 	if err != nil {
 		return nil, err
@@ -34,6 +35,7 @@ func NewBoltDB() (*Client, error) {
 	}
 
 	return &Client{
+		DB:          db,
 		UsersBucket: b,
 	}, nil
 }

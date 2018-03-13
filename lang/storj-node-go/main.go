@@ -13,12 +13,12 @@ import (
 
 func main() {
 
-	bdb, err := boltdb.NewBoltDB()
+	bdb, err := boltdb.New()
 	if err != nil {
 
 	}
 
-	defer bdb.Close()
+	defer bdb.DB.Close()
 
 	users := routes.Users{DB: bdb}
 	app := iris.Default()

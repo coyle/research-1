@@ -11,7 +11,7 @@ import (
 
 // Users contains the items needed to process requests to the user namespace
 type Users struct {
-	DB boltdb.Client
+	DB *boltdb.Client
 }
 
 // CreateUser instantiates a new user
